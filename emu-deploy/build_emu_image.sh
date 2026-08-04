@@ -14,7 +14,8 @@
 #   2. each MemMap gets its own EEPROM byte buffer       (src/cmis/field.py)
 #   3. SoftwareReset is Write-Only/Self-Clearing per CMIS
 #                                     (src/xcvr_emu/transceiver/transceiver.py)
-# The source is cloned/checked-out on demand below, so nothing is patched here.
+# The source is cloned/checked-out on demand below. We only patch build-tool
+# compatibility locally; emulator runtime fixes remain in the fork branch.
 # Its runtime CMD is `xcvr-emud -c config.yaml` and it serves gRPC on :50051.
 #
 # Usage:  ./build_emu_image.sh [XCVR_EMU_REPO] [IMAGE_TAG] [OUT_TAR]
@@ -70,6 +71,12 @@ fi
 
 echo "[image] xcvr-emu @ branch $(git -C "$XCVR_EMU_REPO" rev-parse --abbrev-ref HEAD) ($(git -C "$XCVR_EMU_REPO" rev-parse --short HEAD))"
 [ -f "$XCVR_EMU_REPO/Dockerfile" ] || { echo "ERROR: Dockerfile not found in $XCVR_EMU_REPO"; exit 1; }
+
+# pip 26.2 removed pip._internal.utils.compat.stdlib_pkgs, which the current
+# pip-tools release imports. Keep pip below that boundary until pip-tools no
+# longer relies on the removed private API.
+sed -i 's/RUN pip install --upgrade pip setuptools pip-tools build/RUN pip install --upgrade "pip<26.2" setuptools pip-tools build/' \
+  "$XCVR_EMU_REPO/Dockerfile"
 
 echo "[image] building $IMAGE_TAG from $XCVR_EMU_REPO (branch $XCVR_EMU_BRANCH)"
 docker build -t "$IMAGE_TAG" "$XCVR_EMU_REPO"

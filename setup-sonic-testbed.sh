@@ -184,8 +184,15 @@ install_prereqs() {
 #    wiped on VM DEALLOCATE. Keep the VM running.)
 # ---------------------------------------------------------------------------
 find_data_disk() {
+  local min_size=$((64 * 1024 * 1024 * 1024))
   lsblk -bdno NAME,SIZE,TYPE | awk '$3=="disk"{print $2, $1}' | sort -rn | while read -r size name; do
-    [ "$(lsblk -no MOUNTPOINT "/dev/$name" | grep -c '/')" -eq 0 ] && { echo "/dev/$name"; break; }
+    local dev="/dev/$name"
+    [ "$size" -ge "$min_size" ] || continue
+    lsblk -nrpo MOUNTPOINTS "$dev" | grep -q '[^[:space:]]' && continue
+    swapon --noheadings --raw --output NAME 2>/dev/null | grep -qx "$dev" && continue
+    sudo blkid "$dev" >/dev/null 2>&1 && continue
+    echo "$dev"
+    break
   done
 }
 setup_storage() {
@@ -199,8 +206,10 @@ setup_storage() {
       return 0
     fi
     echo "Using spare disk: $dev"
-    sudo mkfs.ext4 -F -q "$dev"
-    sudo mkdir -p "$DATA" && sudo mount "$dev" "$DATA"
+    sudo mkfs.ext4 -F -q "$dev" || die "failed to format spare disk $dev"
+    sudo mkdir -p "$DATA" || die "failed to create $DATA"
+    sudo mount "$dev" "$DATA" || die "failed to mount $dev at $DATA"
+    mountpoint -q "$DATA" || die "$DATA is not a mount point after mounting $dev"
     # Idempotent fstab entry (avoid duplicates across re-runs).
     if ! grep -qs "[[:space:]]$DATA[[:space:]]" /etc/fstab; then
       echo "$dev $DATA ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab >/dev/null
@@ -285,14 +294,52 @@ download_image() {
 # ---------------------------------------------------------------------------
 # Phase 6: create the sonic-mgmt container
 # ---------------------------------------------------------------------------
+create_mgmt_container() {
+  local setup_script="$REPO_DIR/setup-container.sh"
+  local docker_pid docker_root_propagation
+  docker_pid="$(systemctl show -p MainPID --value docker)"
+  docker_root_propagation="$(sudo nsenter -t "$docker_pid" -m findmnt -no PROPAGATION / 2>/dev/null || true)"
+
+  case "$docker_root_propagation" in
+    *shared*|*slave*)
+      ( cd "$REPO_DIR" && "$setup_script" -n "$MGMT_CONTAINER" -d /data )
+      ;;
+    *)
+      warn "Docker uses private mount propagation — creating mgmt with standard bind mounts"
+      local compat_script status
+      compat_script="$(mktemp "$REPO_DIR/.setup-container.compat.XXXXXX")" \
+        || die "failed to create setup-container compatibility copy"
+      sed 's/:rslave/:rw/g' "$setup_script" > "$compat_script" \
+        || { rm -f "$compat_script"; die "failed to prepare setup-container compatibility copy"; }
+      chmod +x "$compat_script"
+      ( cd "$REPO_DIR" && "$compat_script" -n "$MGMT_CONTAINER" -d /data )
+      status=$?
+      rm -f "$compat_script"
+      return "$status"
+      ;;
+  esac
+}
+
 setup_container() {
   log "Phase 6: sonic-mgmt container"
   if docker ps --format '{{.Names}}' | grep -qx "$MGMT_CONTAINER"; then
     ok "container '$MGMT_CONTAINER' already running"
+  elif docker ps -a --format '{{.Names}}' | grep -qx "$MGMT_CONTAINER"; then
+    if docker start "$MGMT_CONTAINER" >/dev/null; then
+      ok "started existing container '$MGMT_CONTAINER'"
+    else
+      warn "existing container '$MGMT_CONTAINER' cannot start — recreating it"
+      docker rm -f "$MGMT_CONTAINER" >/dev/null \
+        || die "failed to remove broken container '$MGMT_CONTAINER'"
+      create_mgmt_container \
+        || die "failed to recreate container '$MGMT_CONTAINER'"
+    fi
   else
-    ( cd "$REPO_DIR" && ./setup-container.sh -n "$MGMT_CONTAINER" -d /data )
+    create_mgmt_container \
+      || die "failed to create container '$MGMT_CONTAINER'"
   fi
-  dexec "$MGMT_CONTAINER" bash -lc 'ls -d /data/sonic-mgmt >/dev/null && echo repo-mounted'
+  dexec "$MGMT_CONTAINER" bash -lc 'test -d /data/sonic-mgmt' \
+    || die "container '$MGMT_CONTAINER' is not ready or /data/sonic-mgmt is not mounted"
   ok "container '$MGMT_CONTAINER' ready (repo at /data/sonic-mgmt)"
 }
 
@@ -339,7 +386,8 @@ patch_vm_host_setup_for_doca() {
 start_vms() {
   log "Phase 8: start $NUM_VMS $VM_TYPE neighbor VMs"
   patch_vm_host_setup_for_doca
-  tbcli "-t $TB_FILE -m $INV -n $NUM_VMS -k $VM_TYPE start-vms $SERVER $VAULT_FILE"
+  tbcli "-t $TB_FILE -m $INV -n $NUM_VMS -k $VM_TYPE start-vms $SERVER $VAULT_FILE" \
+    || die "failed to start neighbor VMs"
   timeout 20 sudo virsh list --all 2>/dev/null || true
   ok "neighbor VMs started"
 }
@@ -349,7 +397,8 @@ start_vms() {
 # ---------------------------------------------------------------------------
 add_topo() {
   log "Phase 9: add-topo $TESTBED_NAME"
-  tbcli "-t $TB_FILE -m $INV -k $VM_TYPE add-topo $TESTBED_NAME $VAULT_FILE"
+  tbcli "-t $TB_FILE -m $INV -k $VM_TYPE add-topo $TESTBED_NAME $VAULT_FILE" \
+    || die "failed to deploy topology $TESTBED_NAME"
   ok "topology $TESTBED_NAME deployed (DUT + neighbors + PTF)"
 }
 
@@ -358,7 +407,8 @@ add_topo() {
 # ---------------------------------------------------------------------------
 deploy_mg() {
   log "Phase 10: deploy-mg $TESTBED_NAME"
-  tbcli "-t $TB_FILE -m $INV deploy-mg $TESTBED_NAME $INV $VAULT_FILE"
+  tbcli "-t $TB_FILE -m $INV deploy-mg $TESTBED_NAME $INV $VAULT_FILE" \
+    || die "failed to deploy minigraph to $DUT"
   ok "minigraph deployed — DUT configured as T0"
 }
 
@@ -370,10 +420,12 @@ verify() {
   # Force IPv4 (-e ansible_host=$DUT_IP) — the KVM mgmt network has no IPv6 route
   # from the container, so let ansible use the DUT's IPv4 mgmt address.
   local DUT_IP="${DUT_IP:-10.250.0.101}"
-  dexec "$MGMT_CONTAINER" bash -lc "cd /data/sonic-mgmt/ansible && \
-     ansible -m shell -a 'show version | head -12' -i $INV $DUT -b -e ansible_host=$DUT_IP 2>/dev/null | sed -n '2,14p'; \
-     echo '--- BGP summary ---'; \
-     ansible -m shell -a 'show ip bgp summary' -i $INV $DUT -b -e ansible_host=$DUT_IP 2>/dev/null | sed -n '/Neighbhor\\|Neighbor/,+8p'"
+  dexec "$MGMT_CONTAINER" bash -lc "set -o pipefail; cd /data/sonic-mgmt/ansible && \
+     ansible -m ping -i $INV $DUT -e ansible_host=$DUT_IP >/dev/null && \
+     ansible -m shell -a 'show version | head -12' -i $INV $DUT -b -e ansible_host=$DUT_IP 2>/dev/null | sed -n '2,14p' && \
+     echo '--- BGP summary ---' && \
+     ansible -m shell -a 'show ip bgp summary' -i $INV $DUT -b -e ansible_host=$DUT_IP 2>/dev/null | sed -n '/Neighbhor\\|Neighbor/,+8p'" \
+    || die "DUT $DUT is not reachable at $DUT_IP"
 }
 
 # ---------------------------------------------------------------------------
