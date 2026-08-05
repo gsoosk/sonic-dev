@@ -1,0 +1,7 @@
+apache-burr>=0.42.0
+
+[tracking]
+apache-burr[tracking]
+
+[ui]
+apache-burr[start]

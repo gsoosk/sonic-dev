@@ -999,6 +999,20 @@ xcvrd_tests() {
   local sshopt='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=25'
   local dut="admin@$DUT_IP"
 
+  log "Waiting for xcvr-emu gRPC on $DUT"
+  local ready=0
+  for _ in $(seq 1 72); do
+    if docker exec --user "$HOST_USER" "$MGMT_CONTAINER" bash -lc \
+      "$sshp ssh $sshopt $dut 'sudo ss -lnt | grep -q \":50051 \"'" \
+      >/dev/null 2>&1; then
+      ready=1
+      break
+    fi
+    sleep 5
+  done
+  [ "$ready" -eq 1 ] \
+    || die "xcvr-emu is not listening on $DUT:50051 — run './setup-sonic-testbed.sh emulator' first"
+
   log "Packaging xcvrd-tests and shipping to $DUT"
   local tar=/tmp/xcvrd-tests.tar.gz
   # Exclude local build artifacts so we ship a clean tree.

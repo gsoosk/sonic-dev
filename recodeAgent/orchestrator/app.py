@@ -113,7 +113,16 @@ def build_application(app_id: str, max_iter: int = 10, max_parity_rounds: int = 
     )
     if _tracker_enabled():
         builder = builder.with_tracker("local", project=PROJECT)   # Burr telemetry UI
-    return builder.build()
+    try:
+        return builder.build()
+    except ValueError as e:
+        # Burr 0.42.0 incorrectly labels normal persisted-state resumes as forks,
+        # which gives the tracker a parent pointer with app_id=None.
+        if (builder.fork_from_app_id is None and builder.loaded_from_fork
+                and "PointerModel" in str(e) and "app_id" in str(e)):
+            builder.loaded_from_fork = False
+            return builder._build_common()
+        raise
 
 
 def main() -> int:
