@@ -6,3 +6,7 @@
 	path = CodeWeaver
 	url = https://github.com/gsoosk/CodeWeaver
 	branch = V2
+[submodule "sonic-platform-daemons"]
+	path = sonic-platform-daemons
+	url = https://github.com/gsoosk/sonic-platform-daemons
+	branch = sonic-xcvrd-rust

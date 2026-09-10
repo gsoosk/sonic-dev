@@ -138,6 +138,10 @@ sonic-dev/
 │                            agent methodology with everything project-specific moved
 │                            into a config file, so one engine drives any translation
 │                            (Python→Rust, Java→Go, ...) rather than just xcvrd
+├── sonic-platform-daemons/  submodule — fork of the upstream daemons repo, tracking the
+│                            `sonic-xcvrd-rust` branch: the translated Rust daemon
+│                            published where it would actually live, alongside the
+│                            Python `sonic-xcvrd/` it replaces
 ├── benchmark/               performance harness comparing a Rust translation against
 │                            the Python reference — on the live DUT and in-process —
 │                            with provenance recording and a work-equivalence gate
@@ -166,13 +170,19 @@ so it translates arbitrary codebases rather than only `xcvrd`.
 (works for any translation); the in-process harness links a translation as a library for
 per-task detail. See `benchmark/README.md`.
 
+**`sonic-platform-daemons/` is where a finished translation is published.** A fork of the
+upstream repo whose `sonic-xcvrd-rust` branch carries the Rust daemon as a sibling of the
+Python `sonic-xcvrd/` it replaces — the same tree as `recodeAgent/results/result4_optimized/crate`,
+but laid out where it would actually ship. Pinned here as a submodule so this repo records
+exactly which translation was published.
+
 ## Requirements
 
 A Linux host with nested virtualization, passwordless sudo, docker, and a large data
 mount (default `/mnt/data`). `./setup-sonic-testbed.sh preflight` checks all of it and
 `install_prereqs` installs the rest.
 
-Clone with submodules (`xcvr-emu`, `CodeWeaver`):
+Clone with submodules (`xcvr-emu`, `CodeWeaver`, `sonic-platform-daemons`):
 
 ```bash
 git clone --recurse-submodules https://github.com/gsoosk/sonic-dev
