@@ -1,0 +1,413 @@
+[validate] ALL: running the ENTIRE xcvrd-tests suite: (all modules, incl. slow)
+[validate] staging crate (pipeline/crate) + xcvrd-tests + dut scripts -> local
+[validate] running build+inject+test+restore on the DUT
+[run] building crate
+[swsslib] already staged at /home/sonic/recode/swsslib
+[build] cargo build --release in recode-rust-build (crate=/home/sonic/recode/crate)
+    Updating crates.io index
+    Updating git repository `https://github.com/sonic-net/sonic-swss-common`
+ Downloading crates ...
+  Downloaded bit-set v0.5.3
+  Downloaded memoffset v0.9.1
+  Downloaded rustc-hash v1.1.0
+  Downloaded bindgen v0.70.1
+  Downloaded bit-vec v0.6.3
+  Downloaded tracing-log v0.2.0
+  Downloaded cexpr v0.6.0
+  Downloaded pin-project-lite v0.2.17
+  Downloaded autocfg v1.5.1
+  Downloaded clang-sys v1.9.1
+  Downloaded shlex v1.3.0
+  Downloaded aho-corasick v1.1.5
+  Downloaded libloading v0.8.9
+  Downloaded once_cell v1.21.4
+  Downloaded unindent v0.2.4
+  Downloaded bitflags v2.13.1
+  Downloaded getset v0.1.7
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded pyo3-macros v0.22.6
+  Downloaded heck v0.5.0
+  Downloaded thread_local v1.1.10
+  Downloaded rustversion v1.0.23
+  Downloaded zmij v1.0.23
+  Downloaded lazy_static v1.5.0
+  Downloaded indexmap v2.14.0
+  Downloaded either v1.17.0
+  Downloaded matchers v0.2.0
+  Downloaded equivalent v1.0.2
+  Downloaded itoa v1.0.18
+  Downloaded thiserror-impl v1.0.69
+  Downloaded cfg-if v1.0.4
+  Downloaded quote v1.0.47
+  Downloaded serde_core v1.0.229
+  Downloaded smallvec v1.15.2
+  Downloaded glob v0.3.4
+  Downloaded pyo3-build-config v0.22.6
+  Downloaded thiserror v1.0.69
+  Downloaded tracing-core v0.1.36
+  Downloaded target-lexicon v0.12.16
+  Downloaded fancy-regex v0.13.0
+  Downloaded proc-macro2 v1.0.107
+  Downloaded indoc v2.0.7
+  Downloaded pyo3-ffi v0.22.6
+  Downloaded sharded-slab v0.1.7
+  Downloaded prettyplease v0.2.37
+  Downloaded pyo3-macros-backend v0.22.6
+  Downloaded serde_derive v1.0.229
+  Downloaded memchr v2.8.3
+  Downloaded unicode-ident v1.0.24
+  Downloaded hashbrown v0.17.1
+  Downloaded log v0.4.33
+  Downloaded minimal-lexical v0.2.1
+  Downloaded serde v1.0.229
+  Downloaded nom v7.1.3
+  Downloaded itertools v0.13.0
+  Downloaded regex-syntax v0.8.11
+  Downloaded serde_json v1.0.151
+  Downloaded regex v1.13.1
+  Downloaded tracing-subscriber v0.3.23
+  Downloaded syn v2.0.119
+  Downloaded syn v3.0.3
+  Downloaded tracing v0.1.44
+  Downloaded pyo3 v0.22.6
+  Downloaded regex-automata v0.4.16
+  Downloaded libc v0.2.189
+   Compiling xcvrd-rs v0.1.0 (/src/xcvrd-rs)
+    Finished `release` profile [optimized] target(s) in 1.81s
+[build] OK -> /home/sonic/recode/crate/target/release/xcvrd-rs
+[run][t] build                  5141 ms
+[run] staging binary + dut_validate.sh on the DUT
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+[run][t] ship                   2351 ms
+[run] shipping xcvrd-tests -> admin@10.250.0.101:/home/admin/xcvrd-tests
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+[run][t] ship tests             1658 ms
+[run] validating on the DUT (milestone ALL, dom_update_interval=5)
+Debian GNU/Linux 13 \n \l
+
+[dut] injecting Rust xcvrd for milestone ALL (requested --dom_update_interval=5)
+[dut][t] docker cp binary               38 ms
+[dut][t] chmod xcvrd-rs                106 ms
+[dut][t] backup xcvrd                   95 ms
+[dut][t] verify backup                 106 ms
+[dut][t] write shim                    219 ms
+[dut][t] supervisorctl restart       14023 ms
+[dut][t] settle (poll RUNNING)         254 ms
+[dut] xcvrd status after inject:
+[dut] dom_update_interval: passed --dom_update_interval=5 (accepted, not rejected)5
+[dut][t] inject() total              14849 ms  <== INJECT PHASE TOTAL
+xcvrd                            RUNNING   pid 40944, uptime 0:00:12
+[dut] running xcvrd-tests (args_b64=<none>)
+==================== run.sh / pytest output ====================
+[run] deps OK: grpc 1.66.2 | pytest 9.1.1
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/admin/xcvrd-tests
+configfile: pytest.ini
+plugins: typeguard-4.4.2
+collecting ... collected 105 items
+
+xcvrd-tests/tests/test_app_select.py::test_app_selection_default_speed PASSED [  0%]
+xcvrd-tests/tests/test_app_select.py::test_app_selection_follows_port_speed PASSED [  1%]
+xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_datapath_activated PASSED [  2%]
+xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_emulator_datapath_agrees PASSED [  3%]
+xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_emulator_module_state_agrees PASSED [  4%]
+xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_bringup_provisioning_write_order PASSED [  5%]
+xcvrd-tests/tests/test_cmis_datapath.py::test_activated_per_lane_status_invariants PASSED [  6%]
+xcvrd-tests/tests/test_cmis_failed.py::test_cmis_reaches_failed_after_retries PASSED [  7%]
+xcvrd-tests/tests/test_cmis_forced_tx.py::test_forced_tx_disable_on_admin_down_and_reenable PASSED [  8%]
+xcvrd-tests/tests/test_cmis_reconfig.py::test_daemon_drives_datapath_reconfiguration PASSED [  9%]
+xcvrd-tests/tests/test_cmis_state_progression.py::test_cmis_state_progression PASSED [ 10%]
+xcvrd-tests/tests/test_coherent_tuning.py::test_coherent_tuning_writes PASSED [ 11%]
+xcvrd-tests/tests/test_daemon_control.py::test_daemon_drives_module_out_of_low_power PASSED [ 12%]
+xcvrd-tests/tests/test_daemon_control.py::test_daemon_low_power_exit_reaches_module_ready PASSED [ 13%]
+xcvrd-tests/tests/test_dom.py::test_dom_table_present PASSED             [ 14%]
+xcvrd-tests/tests/test_dom.py::test_temperature_reflects_emulator PASSED [ 15%]
+xcvrd-tests/tests/test_dom.py::test_voltage_reflects_emulator PASSED     [ 16%]
+xcvrd-tests/tests/test_dom.py::test_dom_sensor_publishes_per_lane_fields PASSED [ 17%]
+xcvrd-tests/tests/test_dom.py::test_dom_thresholds_decode_written_values PASSED [ 18%]
+xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_groups_temp_and_vcc PASSED [ 19%]
+xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_change_count_and_times PASSED [ 20%]
+xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_change_count_not_bumped_on_noop PASSED [ 20%]
+xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_metadata_initialized_on_first_publish PASSED [ 21%]
+xcvrd-tests/tests/test_dom_gating.py::test_dom_gated_during_cmis_init FAILED [ 22%]
+xcvrd-tests/tests/test_dom_lpmode.py::test_lpmode_gates_pm_freeze PASSED [ 23%]
+xcvrd-tests/tests/test_dom_polling.py::test_dom_polling_disabled_halts_dom PASSED [ 24%]
+xcvrd-tests/tests/test_fast_reboot_dp_skip.py::test_fast_reboot_skips_datapath_deinit PASSED [ 25%]
+xcvrd-tests/tests/test_fast_reboot_dp_skip.py::test_normal_reboot_deinits_datapath PASSED [ 26%]
+xcvrd-tests/tests/test_firmware_info.py::test_firmware_info_published PASSED [ 27%]
+xcvrd-tests/tests/test_flat_memory.py::test_flat_memory_reaches_ready_without_datapath PASSED [ 28%]
+xcvrd-tests/tests/test_flat_memory.py::test_flat_memory_skips_datapath_bringup_on_replug PASSED [ 29%]
+xcvrd-tests/tests/test_golden.py::test_steady_state PASSED               [ 30%]
+xcvrd-tests/tests/test_golden.py::test_activated_datapath PASSED         [ 31%]
+xcvrd-tests/tests/test_golden.py::test_dom_flag PASSED                   [ 32%]
+xcvrd-tests/tests/test_health.py::test_xcvrd_running PASSED              [ 33%]
+xcvrd-tests/tests/test_health.py::test_baseline_is_live PASSED           [ 34%]
+xcvrd-tests/tests/test_host_tx_ready.py::test_daemon_reacts_to_host_tx_ready_not_ready PASSED [ 35%]
+xcvrd-tests/tests/test_info_content.py::test_info_has_expected_identity PASSED [ 36%]
+xcvrd-tests/tests/test_info_content.py::test_info_serial_and_revision PASSED [ 37%]
+xcvrd-tests/tests/test_info_content.py::test_info_type_is_qsfp_dd PASSED [ 38%]
+xcvrd-tests/tests/test_info_content.py::test_info_power_class PASSED     [ 39%]
+xcvrd-tests/tests/test_info_content.py::test_all_present_ports_have_info PASSED [ 40%]
+xcvrd-tests/tests/test_info_content.py::test_info_extended_identity PASSED [ 40%]
+xcvrd-tests/tests/test_info_content.py::test_info_application_advertisement PASSED [ 41%]
+xcvrd-tests/tests/test_info_content.py::test_info_apsel_and_lane_count_on_activated_port PASSED [ 42%]
+xcvrd-tests/tests/test_interaction_trace.py::test_xcvrd_polls_module PASSED [ 43%]
+xcvrd-tests/tests/test_interaction_trace.py::test_plug_triggers_read_burst PASSED [ 44%]
+xcvrd-tests/tests/test_interaction_trace.py::test_reads_target_identity_page PASSED [ 45%]
+xcvrd-tests/tests/test_last_update_time.py::test_dom_sensor_last_update_time PASSED [ 46%]
+xcvrd-tests/tests/test_last_update_time.py::test_status_last_update_time PASSED [ 47%]
+xcvrd-tests/tests/test_last_update_time.py::test_last_update_time_advances_on_refresh PASSED [ 48%]
+xcvrd-tests/tests/test_link_change_flags.py::test_link_change_triggers_fast_flag_recapture PASSED [ 49%]
+xcvrd-tests/tests/test_logical_port.py::test_logical_port_remove_deletes_full_table_set PASSED [ 50%]
+xcvrd-tests/tests/test_logical_port.py::test_logical_port_readd_repopulates_and_reseeds_sync_status PASSED [ 51%]
+xcvrd-tests/tests/test_lpmode_reset.py::test_reset_writes_software_reset_bit PASSED [ 52%]
+xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_on_writes_lowpwr_bit PASSED [ 53%]
+xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_reported_on_then_off PASSED [ 54%]
+xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_on_drives_module_state_machine_low_power PASSED [ 55%]
+xcvrd-tests/tests/test_lpmode_reset.py::test_reset_disrupts_then_replug_recovers PASSED [ 56%]
+xcvrd-tests/tests/test_media_settings.py::test_media_settings_published_to_appl_db PASSED [ 57%]
+xcvrd-tests/tests/test_media_settings.py::test_npu_si_sync_status_notified PASSED [ 58%]
+xcvrd-tests/tests/test_media_settings.py::test_npu_si_sync_status_default_to_notified_transition PASSED [ 59%]
+xcvrd-tests/tests/test_multiport.py::test_concurrent_unplug_then_replug PASSED [ 60%]
+xcvrd-tests/tests/test_multiport.py::test_partial_unplug_isolation PASSED [ 60%]
+xcvrd-tests/tests/test_multiport.py::test_concurrent_dom_no_crosstalk PASSED [ 61%]
+xcvrd-tests/tests/test_optics_si.py::test_xcvrd_applies_optics_si PASSED [ 62%]
+xcvrd-tests/tests/test_pm.py::test_pm_published PASSED                   [ 63%]
+xcvrd-tests/tests/test_pm.py::test_pm_real_values PASSED                 [ 64%]
+xcvrd-tests/tests/test_presence.py::test_present_module_populates_info PASSED [ 65%]
+xcvrd-tests/tests/test_presence.py::test_unplug_clears_info PASSED       [ 66%]
+xcvrd-tests/tests/test_presence.py::test_unplug_stays_cleared PASSED     [ 67%]
+xcvrd-tests/tests/test_presence.py::test_replug_restores_info PASSED     [ 68%]
+xcvrd-tests/tests/test_presence.py::test_status_reflects_plug_state PASSED [ 69%]
+xcvrd-tests/tests/test_presence.py::test_present_module_reaches_cmis_ready PASSED [ 70%]
+xcvrd-tests/tests/test_read_retry.py::test_eeprom_read_retry_recovers PASSED [ 71%]
+xcvrd-tests/tests/test_removal_tables.py::test_removal_deletes_full_table_set PASSED [ 72%]
+xcvrd-tests/tests/test_sff8636.py::test_sff8636_identity_routing PASSED  [ 73%]
+xcvrd-tests/tests/test_sff8636.py::test_sff8636_dom PASSED               [ 74%]
+xcvrd-tests/tests/test_sff8636.py::test_sff8636_daemon_drives_tx_disable PASSED [ 75%]
+xcvrd-tests/tests/test_sff_control.py::test_sff_lpmode_disabled_on_bringup PASSED [ 76%]
+xcvrd-tests/tests/test_sff_control.py::test_sff_high_power_class_enabled PASSED [ 77%]
+xcvrd-tests/tests/test_stale_info.py::test_stale_info_purged_on_init PASSED [ 78%]
+xcvrd-tests/tests/test_status_error.py::test_blocking_error_sets_status_and_removes_dom PASSED [ 79%]
+xcvrd-tests/tests/test_status_error.py::test_bad_eeprom_blocking_error PASSED [ 80%]
+xcvrd-tests/tests/test_status_error.py::test_nonblocking_error_keeps_dom PASSED [ 80%]
+xcvrd-tests/tests/test_status_flag.py::test_status_flag_table_published PASSED [ 81%]
+xcvrd-tests/tests/test_status_flag.py::test_module_firmware_fault_flag_reported PASSED [ 82%]
+xcvrd-tests/tests/test_status_flag.py::test_status_flag_change_count_and_times PASSED [ 83%]
+xcvrd-tests/tests/test_status_flag.py::test_datapath_firmware_fault_flag PASSED [ 84%]
+xcvrd-tests/tests/test_status_flag.py::test_module_state_changed_flag PASSED [ 85%]
+xcvrd-tests/tests/test_status_flag.py::test_per_lane_tx_fault_flag PASSED [ 86%]
+xcvrd-tests/tests/test_transceiver_status.py::test_status_table_published PASSED [ 87%]
+xcvrd-tests/tests/test_transceiver_status.py::test_status_baseline_deactivated PASSED [ 88%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_supported_advertised PASSED      [ 89%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_real_values_published PASSED     [ 90%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_threshold_values_published PASSED [ 91%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_high_alarm_flag_and_metadata PASSED [ 92%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[lalarm] PASSED [ 93%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[hwarn] PASSED [ 94%]
+xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[lwarn] PASSED [ 95%]
+xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_supported_advertised PASSED [ 96%]
+xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_real_values_published PASSED [ 97%]
+xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_min_avg_max_ordering PASSED [ 98%]
+xcvrd-tests/tests/test_warm_reboot.py::test_fast_reboot_preserves_transceiver_status PASSED [ 99%]
+xcvrd-tests/tests/test_warm_reboot.py::test_normal_shutdown_clears_transceiver_status PASSED [100%]
+
+=================================== FAILURES ===================================
+_______________________ test_dom_gated_during_cmis_init ________________________
+
+fault_port = ('Ethernet48', 12)
+emu = <lib.emu.EmulatorClient object at 0x7f2e8bc7acf0>
+statedb = <lib.statedb.StateDB object at 0x7f2e8bb752b0>
+
+    def test_dom_gated_during_cmis_init(fault_port, emu, statedb):
+        port, idx = fault_port
+    
+        # Arm the stall, clear DOM_FLAG, and re-insert so the module enters CMIS init
+        # and stays non-terminal (retrying) for a meaningful window.
+        faults.arm(emu, idx, faults.FAULT_DP_STALL)
+        emu.unplug(idx)
+        wait_until(lambda: not statedb.hget(f"TRANSCEIVER_INFO|{port}", "manufacturer"),
+                   timeout=T_FAST, msg=f"{port} cleared before stall insert")
+        statedb.delete(f"{DOM_FLAG}|{port}")
+        emu.plug(idx)
+    
+        # Sample (cmis_state, DOM_FLAG present) across the stall window. The invariant:
+        # DOM_FLAG must be absent in EVERY non-terminal sample.
+        non_terminal_seen = 0
+        deadline = time.time() + 2 * T_DOM
+        while time.time() < deadline:
+            state = _cmis(statedb, port)
+            flag_present = statedb.exists(f"{DOM_FLAG}|{port}")
+            if state not in TERMINAL and state is not None:
+                non_terminal_seen += 1
+>               assert not flag_present, (
+                    f"{port} TRANSCEIVER_DOM_FLAG published while cmis_state={state} "
+                    "(non-terminal) -- DOM not gated during CMIS init")
+E               AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init
+E               assert not True
+
+xcvrd-tests/tests/test_dom_gating.py:55: AssertionError
+==================================== PASSES ====================================
+----------- generated xml file: /home/admin/xcvrd-tests/results.xml ------------
+=========================== short test summary info ============================
+PASSED xcvrd-tests/tests/test_app_select.py::test_app_selection_default_speed
+PASSED xcvrd-tests/tests/test_app_select.py::test_app_selection_follows_port_speed
+PASSED xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_datapath_activated
+PASSED xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_emulator_datapath_agrees
+PASSED xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_emulator_module_state_agrees
+PASSED xcvrd-tests/tests/test_cmis_datapath.py::test_cmis_bringup_provisioning_write_order
+PASSED xcvrd-tests/tests/test_cmis_datapath.py::test_activated_per_lane_status_invariants
+PASSED xcvrd-tests/tests/test_cmis_failed.py::test_cmis_reaches_failed_after_retries
+PASSED xcvrd-tests/tests/test_cmis_forced_tx.py::test_forced_tx_disable_on_admin_down_and_reenable
+PASSED xcvrd-tests/tests/test_cmis_reconfig.py::test_daemon_drives_datapath_reconfiguration
+PASSED xcvrd-tests/tests/test_cmis_state_progression.py::test_cmis_state_progression
+PASSED xcvrd-tests/tests/test_coherent_tuning.py::test_coherent_tuning_writes
+PASSED xcvrd-tests/tests/test_daemon_control.py::test_daemon_drives_module_out_of_low_power
+PASSED xcvrd-tests/tests/test_daemon_control.py::test_daemon_low_power_exit_reaches_module_ready
+PASSED xcvrd-tests/tests/test_dom.py::test_dom_table_present
+PASSED xcvrd-tests/tests/test_dom.py::test_temperature_reflects_emulator
+PASSED xcvrd-tests/tests/test_dom.py::test_voltage_reflects_emulator
+PASSED xcvrd-tests/tests/test_dom.py::test_dom_sensor_publishes_per_lane_fields
+PASSED xcvrd-tests/tests/test_dom.py::test_dom_thresholds_decode_written_values
+PASSED xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_groups_temp_and_vcc
+PASSED xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_change_count_and_times
+PASSED xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_change_count_not_bumped_on_noop
+PASSED xcvrd-tests/tests/test_dom_flag_meta.py::test_dom_flag_metadata_initialized_on_first_publish
+PASSED xcvrd-tests/tests/test_dom_lpmode.py::test_lpmode_gates_pm_freeze
+PASSED xcvrd-tests/tests/test_dom_polling.py::test_dom_polling_disabled_halts_dom
+PASSED xcvrd-tests/tests/test_fast_reboot_dp_skip.py::test_fast_reboot_skips_datapath_deinit
+PASSED xcvrd-tests/tests/test_fast_reboot_dp_skip.py::test_normal_reboot_deinits_datapath
+PASSED xcvrd-tests/tests/test_firmware_info.py::test_firmware_info_published
+PASSED xcvrd-tests/tests/test_flat_memory.py::test_flat_memory_reaches_ready_without_datapath
+PASSED xcvrd-tests/tests/test_flat_memory.py::test_flat_memory_skips_datapath_bringup_on_replug
+PASSED xcvrd-tests/tests/test_golden.py::test_steady_state
+PASSED xcvrd-tests/tests/test_golden.py::test_activated_datapath
+PASSED xcvrd-tests/tests/test_golden.py::test_dom_flag
+PASSED xcvrd-tests/tests/test_health.py::test_xcvrd_running
+PASSED xcvrd-tests/tests/test_health.py::test_baseline_is_live
+PASSED xcvrd-tests/tests/test_host_tx_ready.py::test_daemon_reacts_to_host_tx_ready_not_ready
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_has_expected_identity
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_serial_and_revision
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_type_is_qsfp_dd
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_power_class
+PASSED xcvrd-tests/tests/test_info_content.py::test_all_present_ports_have_info
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_extended_identity
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_application_advertisement
+PASSED xcvrd-tests/tests/test_info_content.py::test_info_apsel_and_lane_count_on_activated_port
+PASSED xcvrd-tests/tests/test_interaction_trace.py::test_xcvrd_polls_module
+PASSED xcvrd-tests/tests/test_interaction_trace.py::test_plug_triggers_read_burst
+PASSED xcvrd-tests/tests/test_interaction_trace.py::test_reads_target_identity_page
+PASSED xcvrd-tests/tests/test_last_update_time.py::test_dom_sensor_last_update_time
+PASSED xcvrd-tests/tests/test_last_update_time.py::test_status_last_update_time
+PASSED xcvrd-tests/tests/test_last_update_time.py::test_last_update_time_advances_on_refresh
+PASSED xcvrd-tests/tests/test_link_change_flags.py::test_link_change_triggers_fast_flag_recapture
+PASSED xcvrd-tests/tests/test_logical_port.py::test_logical_port_remove_deletes_full_table_set
+PASSED xcvrd-tests/tests/test_logical_port.py::test_logical_port_readd_repopulates_and_reseeds_sync_status
+PASSED xcvrd-tests/tests/test_lpmode_reset.py::test_reset_writes_software_reset_bit
+PASSED xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_on_writes_lowpwr_bit
+PASSED xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_reported_on_then_off
+PASSED xcvrd-tests/tests/test_lpmode_reset.py::test_lpmode_on_drives_module_state_machine_low_power
+PASSED xcvrd-tests/tests/test_lpmode_reset.py::test_reset_disrupts_then_replug_recovers
+PASSED xcvrd-tests/tests/test_media_settings.py::test_media_settings_published_to_appl_db
+PASSED xcvrd-tests/tests/test_media_settings.py::test_npu_si_sync_status_notified
+PASSED xcvrd-tests/tests/test_media_settings.py::test_npu_si_sync_status_default_to_notified_transition
+PASSED xcvrd-tests/tests/test_multiport.py::test_concurrent_unplug_then_replug
+PASSED xcvrd-tests/tests/test_multiport.py::test_partial_unplug_isolation
+PASSED xcvrd-tests/tests/test_multiport.py::test_concurrent_dom_no_crosstalk
+PASSED xcvrd-tests/tests/test_optics_si.py::test_xcvrd_applies_optics_si
+PASSED xcvrd-tests/tests/test_pm.py::test_pm_published
+PASSED xcvrd-tests/tests/test_pm.py::test_pm_real_values
+PASSED xcvrd-tests/tests/test_presence.py::test_present_module_populates_info
+PASSED xcvrd-tests/tests/test_presence.py::test_unplug_clears_info
+PASSED xcvrd-tests/tests/test_presence.py::test_unplug_stays_cleared
+PASSED xcvrd-tests/tests/test_presence.py::test_replug_restores_info
+PASSED xcvrd-tests/tests/test_presence.py::test_status_reflects_plug_state
+PASSED xcvrd-tests/tests/test_presence.py::test_present_module_reaches_cmis_ready
+PASSED xcvrd-tests/tests/test_read_retry.py::test_eeprom_read_retry_recovers
+PASSED xcvrd-tests/tests/test_removal_tables.py::test_removal_deletes_full_table_set
+PASSED xcvrd-tests/tests/test_sff8636.py::test_sff8636_identity_routing
+PASSED xcvrd-tests/tests/test_sff8636.py::test_sff8636_dom
+PASSED xcvrd-tests/tests/test_sff8636.py::test_sff8636_daemon_drives_tx_disable
+PASSED xcvrd-tests/tests/test_sff_control.py::test_sff_lpmode_disabled_on_bringup
+PASSED xcvrd-tests/tests/test_sff_control.py::test_sff_high_power_class_enabled
+PASSED xcvrd-tests/tests/test_stale_info.py::test_stale_info_purged_on_init
+PASSED xcvrd-tests/tests/test_status_error.py::test_blocking_error_sets_status_and_removes_dom
+PASSED xcvrd-tests/tests/test_status_error.py::test_bad_eeprom_blocking_error
+PASSED xcvrd-tests/tests/test_status_error.py::test_nonblocking_error_keeps_dom
+PASSED xcvrd-tests/tests/test_status_flag.py::test_status_flag_table_published
+PASSED xcvrd-tests/tests/test_status_flag.py::test_module_firmware_fault_flag_reported
+PASSED xcvrd-tests/tests/test_status_flag.py::test_status_flag_change_count_and_times
+PASSED xcvrd-tests/tests/test_status_flag.py::test_datapath_firmware_fault_flag
+PASSED xcvrd-tests/tests/test_status_flag.py::test_module_state_changed_flag
+PASSED xcvrd-tests/tests/test_status_flag.py::test_per_lane_tx_fault_flag
+PASSED xcvrd-tests/tests/test_transceiver_status.py::test_status_table_published
+PASSED xcvrd-tests/tests/test_transceiver_status.py::test_status_baseline_deactivated
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_supported_advertised
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_real_values_published
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_threshold_values_published
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_high_alarm_flag_and_metadata
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[lalarm]
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[hwarn]
+PASSED xcvrd-tests/tests/test_vdm.py::test_vdm_low_and_warn_flags[lwarn]
+PASSED xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_supported_advertised
+PASSED xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_real_values_published
+PASSED xcvrd-tests/tests/test_vdm_statistic.py::test_vdm_statistic_min_avg_max_ordering
+PASSED xcvrd-tests/tests/test_warm_reboot.py::test_fast_reboot_preserves_transceiver_status
+PASSED xcvrd-tests/tests/test_warm_reboot.py::test_normal_shutdown_clears_transceiver_status
+FAILED xcvrd-tests/tests/test_dom_gating.py::test_dom_gated_during_cmis_init
+================== 1 failed, 104 passed in 1783.05s (0:29:43) ==================
+================== end run.sh / pytest output ==================
+[dut][t] run.sh total               1784030 ms  <== TESTS PHASE TOTAL
+[dut] run.sh exit=1
+[dut] restoring Python xcvrd
+[dut][t] restore total               11750 ms  <== RESTORE PHASE TOTAL
+[dut] xcvrd status after restore:
+xcvrd                            RUNNING   pid 42479, uptime 0:00:11
+[dut] report:
+{
+  "milestone": "ALL",
+  "passed": false,
+  "tests": {
+    "total": 105,
+    "passed": 104,
+    "failed": 1
+  },
+  "failures": [
+    {
+      "test": "test_dom_gated_during_cmis_init",
+      "msg": "AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init\nassert not True"
+    }
+  ]
+}
+[run][t] validate (on DUT)    1811829 ms
+[run] fetching report.json
+Debian GNU/Linux 13 \n \l
+
+[run][t] fetch                   664 ms
+[run] report -> /home/sonic/recode/report.json
+[validate] fetching report.json -> pipeline/
+{
+  "milestone": "ALL",
+  "passed": false,
+  "tests": {
+    "total": 105,
+    "passed": 104,
+    "failed": 1
+  },
+  "failures": [
+    {
+      "test": "test_dom_gated_during_cmis_init",
+      "msg": "AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init\nassert not True"
+    }
+  ]
+}

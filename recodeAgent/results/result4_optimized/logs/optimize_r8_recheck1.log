@@ -1,0 +1,203 @@
+[validate] ALL: running the ENTIRE xcvrd-tests suite: -k test_dom_gated_during_cmis_init
+[validate] staging crate (pipeline/crate) + xcvrd-tests + dut scripts -> local
+[validate] running build+inject+test+restore on the DUT
+[run] building crate
+[swsslib] already staged at /home/sonic/recode/swsslib
+[build] cargo build --release in recode-rust-build (crate=/home/sonic/recode/crate)
+    Updating crates.io index
+    Updating git repository `https://github.com/sonic-net/sonic-swss-common`
+ Downloading crates ...
+  Downloaded bit-set v0.5.3
+  Downloaded autocfg v1.5.1
+  Downloaded bit-vec v0.6.3
+  Downloaded equivalent v1.0.2
+  Downloaded cfg-if v1.0.4
+  Downloaded heck v0.5.0
+  Downloaded getset v0.1.7
+  Downloaded matchers v0.2.0
+  Downloaded shlex v1.3.0
+  Downloaded zmij v1.0.23
+  Downloaded pyo3-build-config v0.22.6
+  Downloaded rustversion v1.0.23
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded once_cell v1.21.4
+  Downloaded pyo3-macros v0.22.6
+  Downloaded thiserror v1.0.69
+  Downloaded unindent v0.2.4
+  Downloaded lazy_static v1.5.0
+  Downloaded thread_local v1.1.10
+  Downloaded rustc-hash v1.1.0
+  Downloaded cexpr v0.6.0
+  Downloaded either v1.17.0
+  Downloaded glob v0.3.4
+  Downloaded indoc v2.0.7
+  Downloaded tracing-log v0.2.0
+  Downloaded serde_derive v1.0.229
+  Downloaded itoa v1.0.18
+  Downloaded libloading v0.8.9
+  Downloaded pin-project-lite v0.2.17
+  Downloaded memoffset v0.9.1
+  Downloaded pyo3-macros-backend v0.22.6
+  Downloaded target-lexicon v0.12.16
+  Downloaded clang-sys v1.9.1
+  Downloaded quote v1.0.47
+  Downloaded prettyplease v0.2.37
+  Downloaded thiserror-impl v1.0.69
+  Downloaded aho-corasick v1.1.5
+  Downloaded unicode-ident v1.0.24
+  Downloaded minimal-lexical v0.2.1
+  Downloaded smallvec v1.15.2
+  Downloaded log v0.4.33
+  Downloaded proc-macro2 v1.0.107
+  Downloaded sharded-slab v0.1.7
+  Downloaded tracing-core v0.1.36
+  Downloaded bitflags v2.13.1
+  Downloaded fancy-regex v0.13.0
+  Downloaded pyo3-ffi v0.22.6
+  Downloaded serde_core v1.0.229
+  Downloaded serde v1.0.229
+  Downloaded memchr v2.8.3
+  Downloaded nom v7.1.3
+  Downloaded indexmap v2.14.0
+  Downloaded itertools v0.13.0
+  Downloaded regex v1.13.1
+  Downloaded hashbrown v0.17.1
+  Downloaded serde_json v1.0.151
+  Downloaded bindgen v0.70.1
+  Downloaded tracing-subscriber v0.3.23
+  Downloaded syn v2.0.119
+  Downloaded syn v3.0.3
+  Downloaded regex-syntax v0.8.11
+  Downloaded tracing v0.1.44
+  Downloaded regex-automata v0.4.16
+  Downloaded pyo3 v0.22.6
+  Downloaded libc v0.2.189
+    Finished `release` profile [optimized] target(s) in 1.71s
+[build] OK -> /home/sonic/recode/crate/target/release/xcvrd-rs
+[run][t] build                  5063 ms
+[run] staging binary + dut_validate.sh on the DUT
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+[run][t] ship                   2380 ms
+[run] shipping xcvrd-tests -> admin@10.250.0.101:/home/admin/xcvrd-tests
+Debian GNU/Linux 13 \n \l
+
+Debian GNU/Linux 13 \n \l
+
+[run][t] ship tests             1674 ms
+[run] validating on the DUT (milestone ALL, dom_update_interval=5)
+Debian GNU/Linux 13 \n \l
+
+[dut] injecting Rust xcvrd for milestone ALL (requested --dom_update_interval=5)
+[dut][t] docker cp binary               52 ms
+[dut][t] chmod xcvrd-rs                135 ms
+[dut][t] backup xcvrd                  116 ms
+[dut][t] verify backup                 137 ms
+[dut][t] write shim                    231 ms
+[dut][t] supervisorctl restart       12779 ms
+[dut][t] settle (poll RUNNING)         286 ms
+[dut] xcvrd status after inject:
+[dut] dom_update_interval: passed --dom_update_interval=5 (accepted, not rejected)5
+[dut][t] inject() total              13744 ms  <== INJECT PHASE TOTAL
+xcvrd                            RUNNING   pid 42560, uptime 0:00:10
+[dut] running xcvrd-tests (args_b64=LWsAdGVzdF9kb21fZ2F0ZWRfZHVyaW5nX2NtaXNfaW5pdAA=)
+==================== run.sh / pytest output ====================
+[run] deps OK: grpc 1.66.2 | pytest 9.1.1
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/admin/xcvrd-tests
+configfile: pytest.ini
+plugins: typeguard-4.4.2
+collecting ... collected 105 items / 104 deselected / 1 selected
+
+xcvrd-tests/tests/test_dom_gating.py::test_dom_gated_during_cmis_init FAILED [100%]
+
+=================================== FAILURES ===================================
+_______________________ test_dom_gated_during_cmis_init ________________________
+
+fault_port = ('Ethernet48', 12)
+emu = <lib.emu.EmulatorClient object at 0x7f7569496cf0>
+statedb = <lib.statedb.StateDB object at 0x7f75694712b0>
+
+    def test_dom_gated_during_cmis_init(fault_port, emu, statedb):
+        port, idx = fault_port
+    
+        # Arm the stall, clear DOM_FLAG, and re-insert so the module enters CMIS init
+        # and stays non-terminal (retrying) for a meaningful window.
+        faults.arm(emu, idx, faults.FAULT_DP_STALL)
+        emu.unplug(idx)
+        wait_until(lambda: not statedb.hget(f"TRANSCEIVER_INFO|{port}", "manufacturer"),
+                   timeout=T_FAST, msg=f"{port} cleared before stall insert")
+        statedb.delete(f"{DOM_FLAG}|{port}")
+        emu.plug(idx)
+    
+        # Sample (cmis_state, DOM_FLAG present) across the stall window. The invariant:
+        # DOM_FLAG must be absent in EVERY non-terminal sample.
+        non_terminal_seen = 0
+        deadline = time.time() + 2 * T_DOM
+        while time.time() < deadline:
+            state = _cmis(statedb, port)
+            flag_present = statedb.exists(f"{DOM_FLAG}|{port}")
+            if state not in TERMINAL and state is not None:
+                non_terminal_seen += 1
+>               assert not flag_present, (
+                    f"{port} TRANSCEIVER_DOM_FLAG published while cmis_state={state} "
+                    "(non-terminal) -- DOM not gated during CMIS init")
+E               AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init
+E               assert not True
+
+xcvrd-tests/tests/test_dom_gating.py:55: AssertionError
+----------- generated xml file: /home/admin/xcvrd-tests/results.xml ------------
+=========================== short test summary info ============================
+FAILED xcvrd-tests/tests/test_dom_gating.py::test_dom_gated_during_cmis_init
+====================== 1 failed, 104 deselected in 48.39s ======================
+================== end run.sh / pytest output ==================
+[dut][t] run.sh total                49381 ms  <== TESTS PHASE TOTAL
+[dut] run.sh exit=1
+[dut] restoring Python xcvrd
+[dut][t] restore total               11900 ms  <== RESTORE PHASE TOTAL
+[dut] xcvrd status after restore:
+xcvrd                            RUNNING   pid 42651, uptime 0:00:11
+[dut] report:
+{
+  "milestone": "ALL",
+  "passed": false,
+  "tests": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "failures": [
+    {
+      "test": "test_dom_gated_during_cmis_init",
+      "msg": "AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init\nassert not True"
+    }
+  ]
+}
+[run][t] validate (on DUT)     76297 ms
+[run] fetching report.json
+Debian GNU/Linux 13 \n \l
+
+[run][t] fetch                   653 ms
+[run] report -> /home/sonic/recode/report.json
+[validate] fetching report.json -> pipeline/
+{
+  "milestone": "ALL",
+  "passed": false,
+  "tests": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "failures": [
+    {
+      "test": "test_dom_gated_during_cmis_init",
+      "msg": "AssertionError: Ethernet48 TRANSCEIVER_DOM_FLAG published while cmis_state=DP_DEINIT (non-terminal) -- DOM not gated during CMIS init\nassert not True"
+    }
+  ]
+}
